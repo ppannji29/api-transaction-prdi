@@ -31,15 +31,20 @@ export const TestApi = async(req, res) => {
 export const GetTest = async(req, res) => {
     try {
         const labTest = await LabTest.findAll({
-            include: [
-            {
+            include: [{
                 model: LabTestOrder,
                 as: 'labtestorders',
                 order: [['LabTest.updatedAt','DESC']]
-            }]
+            }],
+            limit: 10,
+            offset: 1
         });
         if(labTest) {
-            res.json({labTest})
+            let countData = labTest.length;
+            res.json({
+                countData,
+                labTest
+            });
         }
     } catch (error) {
        console.log(error); 
