@@ -1,5 +1,5 @@
 import express from "express";
-import { TestApi, ApiLabTest } from "../controllers/Transaction.js";
+import { TestApi, ApiLabTest, GetTest } from "../controllers/Transaction.js";
 // import { verifyToken, verifyTokenAdmin } from "../middleware/verifyToken.js";
 // import { refreshToken, refreshTokenAdmin } from "../controllers/RefreshToken.js";
 
@@ -12,6 +12,7 @@ const router = express.Router();
 // router.post('/api/transaction/generated', verifyTokenAdmin, GenerateTransaction);
 router.get('/api/transaction/testapi', TestApi);
 router.post('/api/transaction/labtest', ApiLabTest);
+router.post('/api/transaction/test/list', GetTest);
 // ----------------------------
 // End Of Transaction Routes
 // ----------------------------

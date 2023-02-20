@@ -28,6 +28,24 @@ export const TestApi = async(req, res) => {
     }
 }
 
+export const GetTest = async(req, res) => {
+    try {
+        const labTest = await LabTest.findAll({
+            include: [
+            {
+                model: LabTestOrder,
+                as: 'labtestorders',
+                order: [['LabTest.updatedAt','DESC']]
+            }]
+        });
+        if(labTest) {
+            res.json({labTest})
+        }
+    } catch (error) {
+       console.log(error); 
+    }
+}
+
 export const ApiLabTest = async(req, res) => {
     let transaction;
     try {
@@ -79,6 +97,7 @@ export const ApiLabTest = async(req, res) => {
                                 'payment_by': orderById.data.RESPONSE2[0].PAYMENT_CHANNEL,
                                 'omzet_ppn_free': orderById.data.RESPONSE2[0].AMOUNT_PPN_FREE,
                                 'omzet_ppn_levied': orderById.data.RESPONSE2[0].AMOUNT_PPN_LEVIED,
+                                // 'tests': orderById.data.RESPONSE3[0].NAME
                                 'tests': orderById.data.RESPONSE3
                             }
                         ];
@@ -122,6 +141,7 @@ export const ApiLabTest = async(req, res) => {
                             home_service: filterOrder[j].SERVICE_TYPE,
                             referral_type_id: filterOrder[j].REFERRAL_DOCTOR_SPECIALITY,
                             doctor_name: filterOrder[j].REFERRAL_DOCTOR_NAME,
+                            row_id: filterOrder[j].ROW_ID,
                             order_date: filterOrder[j].CREATED_AT,
                         },
                     );
@@ -150,13 +170,11 @@ export const ApiLabTest = async(req, res) => {
                     home_service: insTrx[k].home_service,
                     referral_type_id: insTrx[k].referral_type_id,
                     doctor_name: insTrx[k].doctor_name,
+                    row_id: insTrx[k].row_id,
                     order_date: insTrx[k].order_date
                 }, { transaction });
                 tempTrxId = dataInsTrx[k].id;
                 tempOrderId = dataInsTrx[k].order_id;
-                // ------------------------------
-                // Start Of : Storing Data Test From Order 
-                // -----------------------------
                 for (let jk = 0; jk < insTrx[k].tests.length; jk++) {
                     await LabTestOrder.create({
                         order_id: tempOrderId,
@@ -165,7 +183,7 @@ export const ApiLabTest = async(req, res) => {
                         price_actual: insTrx[k].tests[jk].PRICE_ACTUAL,
                         quantity: insTrx[k].tests[jk].QUANTITY,
                         type: insTrx[k].tests[jk].TYPE,
-                        order_lab_test_id: tempTrxId
+                        orderLabTestId: tempTrxId
                     }, { transaction }).then(function (resData) {
                         dataInsTest.push(resData);
                     });
@@ -196,9 +214,87 @@ export const ApiLabTest = async(req, res) => {
     }
 }
 
-// --------------------
-// JWT Check User
-// ------------------- 
+// if(filterOrder[j].CEK_STATUS == 'TOPAY') {
+//     insTrx.push(
+//         {
+//             order_id: filterOrder[j].ORDER_NUMBER,
+//             outlet: filterOrder[j].APPOINTMENT_OUTLET_NAME,
+//             patient_id: parseInt(filterOrder[j].CUSTOMER_ID),
+//             status_payment: 'PENDING',
+//             status_order: filterOrder[j].CEK_STATUS,
+//             payment_by: filterOrder[j].order_by_id[0].payment_by,
+//             omzet: parseInt(filterOrder[j].order_by_id[0].omzet),
+//             omzet_ppn: parseInt(filterOrder[j].order_by_id[0].omzet_ppn),
+//             omzet_ppn_free: parseInt(filterOrder[j].order_by_id[0].omzet_ppn_free),
+//             tests: filterOrder[j].order_by_id[0].tests,
+//             home_service: filterOrder[j].order_by_id[0].home_service,
+//             referral_type_id: filterOrder[j].REFERRAL_DOCTOR_SPECIALITY,
+//             doctor_name: filterOrder[j].REFERRAL_DOCTOR_NAME,
+//             order_date: filterOrder[j].CREATED_AT
+//         },
+//     );
+// }
+// if(filterOrder[j].CEK_STATUS == 'CANCEL') {
+//     insTrx.push(
+//         {
+//             order_id: filterOrder[j].ORDER_NUMBER,
+//             outlet: filterOrder[j].APPOINTMENT_OUTLET_NAME,
+//             patient_id: parseInt(filterOrder[j].CUSTOMER_ID),
+//             status_payment: 'FAILED',
+//             status_order: filterOrder[j].CEK_STATUS,
+//             payment_by: filterOrder[j].order_by_id[0].payment_by,
+//             omzet: parseInt(filterOrder[j].order_by_id[0].omzet),
+//             omzet_ppn: parseInt(filterOrder[j].order_by_id[0].omzet_ppn),
+//             omzet_ppn_free: parseInt(filterOrder[j].order_by_id[0].omzet_ppn_free),
+//             tests: filterOrder[j].order_by_id[0].tests,
+//             home_service: filterOrder[j].order_by_id[0].home_service,
+//             referral_type_id: filterOrder[j].REFERRAL_DOCTOR_SPECIALITY,
+//             doctor_name: filterOrder[j].REFERRAL_DOCTOR_NAME,
+//             order_date: filterOrder[j].CREATED_AT
+//         },
+//     );
+// }
+// if(filterOrder[j].CEK_STATUS == 'COMPLETE') {
+//     insTrx.push(
+//         {
+//             order_id: filterOrder[j].ORDER_NUMBER,
+//             outlet: filterOrder[j].APPOINTMENT_OUTLET_NAME,
+//             patient_id: parseInt(filterOrder[j].CUSTOMER_ID),
+//             status_payment: 'PAID',
+//             status_order: filterOrder[j].CEK_STATUS,
+//             payment_by: filterOrder[j].order_by_id[0].payment_by,
+//             omzet: parseInt(filterOrder[j].order_by_id[0].omzet),
+//             omzet_ppn: parseInt(filterOrder[j].order_by_id[0].omzet_ppn),
+//             omzet_ppn_free: parseInt(filterOrder[j].order_by_id[0].omzet_ppn_free),
+//             tests: filterOrder[j].order_by_id[0].tests,
+//             home_service: filterOrder[j].order_by_id[0].home_service,
+//             referral_type_id: filterOrder[j].REFERRAL_DOCTOR_SPECIALITY,
+//             doctor_name: filterOrder[j].REFERRAL_DOCTOR_NAME,
+//             order_date: filterOrder[j].CREATED_AT
+//         },
+//     );
+// }
+// if(filterOrder[j].CEK_STATUS == 'PROCESS') {
+//     insTrx.push(
+//         {
+//             order_id: filterOrder[j].ORDER_NUMBER,
+//             outlet: filterOrder[j].APPOINTMENT_OUTLET_NAME,
+//             patient_id: parseInt(filterOrder[j].CUSTOMER_ID),
+//             status_payment: 'PAID',
+//             status_order: filterOrder[j].CEK_STATUS,
+//             payment_by: filterOrder[j].order_by_id[0].payment_by,
+//             omzet: parseInt(filterOrder[j].order_by_id[0].omzet),
+//             omzet_ppn: parseInt(filterOrder[j].order_by_id[0].omzet_ppn),
+//             omzet_ppn_free: parseInt(filterOrder[j].order_by_id[0].omzet_ppn_free),
+//             tests: filterOrder[j].order_by_id[0].tests,
+//             home_service: filterOrder[j].order_by_id[0].home_service,
+//             referral_type_id: filterOrder[j].REFERRAL_DOCTOR_SPECIALITY,
+//             doctor_name: filterOrder[j].REFERRAL_DOCTOR_NAME,
+//             order_date: filterOrder[j].CREATED_AT
+//         },
+//     );
+// }
+
 // function getAdminByIdFromJwt(token) {
 //     let adminId;
 //     let usernameAdmin;

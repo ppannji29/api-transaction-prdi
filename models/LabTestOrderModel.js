@@ -3,7 +3,7 @@ import db from "../config/Database.js";
 
 const { DataTypes } = Sequelize;
 
-const LabTestOrderModel = db.define('LabTestOrder', {
+const LabTestOrder = db.define('LabTestOrder', {
     id: {
         type: DataTypes.INTEGER(200),
         autoIncrement: true,
@@ -30,7 +30,7 @@ const LabTestOrderModel = db.define('LabTestOrder', {
     type: {
         type: DataTypes.STRING(15)
     },
-    order_lab_test_id: {
+    orderLabTestId: {
         type: DataTypes.INTEGER(200),
         allowNull: false
     }
@@ -38,4 +38,4 @@ const LabTestOrderModel = db.define('LabTestOrder', {
     freezeTableName: true
 });
 
-export default LabTestOrderModel; 
+export default LabTestOrder;

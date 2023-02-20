@@ -13,8 +13,7 @@ const LabTest = db.define('LabTest', {
     },
     order_id: {
         type: DataTypes.STRING(60),
-        allowNull: false,
-        unique: true
+        allowNull: false
     },
     reg_no: {
         type: DataTypes.INTEGER(60),
@@ -51,10 +50,6 @@ const LabTest = db.define('LabTest', {
     omzet_ppn_livied: {
         type: DataTypes.INTEGER(100)
     },
-    // tests: {
-    //     type: DataTypes.TEXT,
-    //     allowNull: false
-    // },
     home_service: {
         type: DataTypes.STRING(10)
     },
@@ -64,6 +59,9 @@ const LabTest = db.define('LabTest', {
     doctor_name: {
         type: DataTypes.STRING(70)
     },
+    row_id: {
+        type: DataTypes.INTEGER
+    },
     order_date: {
         type: DataTypes.DATEONLY
     }
@@ -71,7 +69,7 @@ const LabTest = db.define('LabTest', {
     freezeTableName: true
 });
 
-LabTest.hasMany(LabTestOrder, {foreignKey: "order_lab_test_id"});
+LabTest.hasMany(LabTestOrder, {as: 'labtestorders', foreignKey: "orderLabTestId"});
 LabTestOrder.belongsTo(LabTest);
 
-export default LabTest; 
+export default LabTest;
