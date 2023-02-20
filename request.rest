@@ -1,0 +1,147 @@
+
+###
+POST http://localhost:5001/api/admin/registration
+Content-Type: application/json
+
+{
+    "username": "admindua",
+    "password": "123456",
+    "confPassword": "123456"
+}
+
+###
+POST http://localhost:5001/api/admin/login
+Content-Type: application/json
+
+{
+    "username": "admindua",
+    "password": "123456"
+}
+
+###
+GET http://localhost:5001/api/admin/token
+
+###
+POST http://localhost:5001/api/admin/create/merchant
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbklkIjo1LCJ1c2VybmFtZSI6ImFkbWluZHVhIiwiaWF0IjoxNjc0MzE4MzIzLCJleHAiOjE2NzQzMTgzMzh9.Tdeusn2Yy1ZDQZD0Gnw6SXohMkpAd3UFHQ15T0anwbM
+
+{
+    "email": "bricorp@bri.co.id",
+    "password": "123456",
+    "confPassword": "123456",
+    "username": "BRI" 
+}
+
+###
+GET http://localhost:5001/api/admin/list
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbklkIjo1LCJ1c2VybmFtZSI6ImFkbWluZHVhIiwiaWF0IjoxNjc2MzY0MzQ0LCJleHAiOjE2NzYzNjQzODR9.8LZv5ghMSgkw5XbAg4JAQRb5fJF8sCDmoXrnENdRF74
+
+###
+GET http://localhost:5001/api/admin/listmerchant
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbklkIjo1LCJ1c2VybmFtZSI6ImFkbWluZHVhIiwiaWF0IjoxNjc2MzUxODQ1LCJleHAiOjE2NzYzNTE4NjB9.xz8gKMW2L4OoTffPZhmIzKU9RGy5w7XiKDPsSOklpGM
+
+###
+GET http://localhost:5001/api/admin/getmerchant?id=2
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbklkIjo1LCJ1c2VybmFtZSI6ImFkbWluZHVhIiwiaWF0IjoxNjc1MzIyMTg2LCJleHAiOjE2NzUzMjIyMjZ9.K8jDJJoCmrFpXI7QXLCl1a-2KsmiCX2UjyW-_inG9MI
+
+###
+GET http://localhost:5001/api/transaction/list
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbklkIjo1LCJ1c2VybmFtZSI6ImFkbWluZHVhIiwiaWF0IjoxNjc2MzUxODczLCJleHAiOjE2NzYzNTE4ODh9.KAdjvC3vvhZ2jOJVLyRE4bOD5zzv6-dTDomE-TPk8p0
+
+###
+POST http://localhost:5001/api/admin/update/merchant
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbklkIjo1LCJ1c2VybmFtZSI6ImFkbWluZHVhIiwiaWF0IjoxNjc0MzY4NDM1LCJleHAiOjE2NzQzNjg0NTB9.tzF49_LVnDlrA9BHARZR3KIoHQyfemy5zlrwXzIdVis
+
+{
+    "merchantId": 1,
+    "email": "prodiacorp@prodia.co.id",
+    "username": "PT Prodia Widyahusada Tbk"
+}
+
+
+###
+GET http://localhost:5001/api/transaction/testapi
+
+###
+POST http://localhost:5001/api/transaction/labtest
+Content-Type: application/json
+
+{
+    "max_record": "100000",
+    "date_from": "2023-01-26",
+    "date_to": "2023-01-27",
+    "service_type": "STANDAR,HS"
+}
+
+# GENERATE Transaction Dummy
+###
+POST http://localhost:5001/api/transaction/generated
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbklkIjo1LCJ1c2VybmFtZSI6ImFkbWluZHVhIiwiaWF0IjoxNjc0NDQ2NDg4LCJleHAiOjE2NzQ0NDY1MDN9.tDE9JD4089OALmAd87dMq10hNMHPJmtLkSXj2hmizs8
+
+{
+    "transaction": [
+        {
+            "amount": 200000000,
+            "content": "Credit Card Mandiri Payment",
+            "paymentType": "CREDIT_CARD",
+            "merchantId": 3
+        },
+        {
+            "amount": 300000,
+            "content": "Pembayaran Bank Transfer BCA",
+            "paymentType": "BANK_TRANSFER",
+            "merchantId": 1
+        },
+        {
+            "amount": 500100,
+            "content": "Gopay",
+            "paymentType": "E_WALLET",
+            "merchantId": 2
+        },
+        {
+            "amount": 5001000,
+            "content": "Pembayaran Virtual Account Mandiri",
+            "paymentType": "VA",
+            "merchantId": 3
+        }
+    ]
+}
+
+### 
+DELETE http://localhost:5001/api/admin/logout
+
+
+###
+GET http://localhost:5001/api/users
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsIm5hbWUiOiJtYWdlciIsImVtYWlsIjoibW1hZ2VyMzYxQGdtYWlsLmNvbSIsImlhdCI6MTY3NDA5NjE0OCwiZXhwIjoxNjc0MDk2MTY4fQ.7sy96wll5gj_3Jgg858TniL-xG_E7DUJyNwlFgvFR-o
+
+###
+POST http://localhost:5001/api/register
+Content-Type: application/json
+
+{
+    "name": "testingdev29",
+    "email": "testingdev29@gmail.com",
+    "password": "123456",
+    "confpassword": "123456"
+}
+
+###
+POST http://localhost:5001/api/login
+Content-Type: application/json
+
+{
+    "email": "mmager361@gmail.com",
+    "password": "123456"
+}
+
+###
+GET http://localhost:5001/api/token
+
+### 
+DELETE http://localhost:5001/api/logout
