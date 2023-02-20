@@ -36,13 +36,12 @@ try {
 }
 
 // Allow Request From Origin Properties Cors
-app.use(cors({ credentials:true, origin: 'http://localhost:3000' }));
+// app.use(cors({ credentials:true, origin: 'http://localhost:3000' }));
 // app.use(cors({ credentials:true }));
 app.use(cookieParser());
 app.use(express.json());
 app.use(BodyParser.json())
 app.use(BodyParser.urlencoded({ extended: true }))
-
 
 app.use(router);
 
