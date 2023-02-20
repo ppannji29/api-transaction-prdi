@@ -74,7 +74,7 @@ export const ApiLabTest = async(req, res) => {
                     if(orderById.data.RESPONSE3.length !== 0) {
                         filterOrder[i]['order_by_id'] = [
                             {
-                                'omzet': orderById.data.RESPONSE3[0].PRICE_ACTUAL,
+                                'omzet': orderById.data.RESPONSE2[0].AMOUNT_ACTUAL,
                                 'omzet_ppn': orderById.data.RESPONSE2[0].AMOUNT_PPN,
                                 'payment_by': orderById.data.RESPONSE2[0].PAYMENT_CHANNEL,
                                 'omzet_ppn_free': orderById.data.RESPONSE2[0].AMOUNT_PPN_FREE,
