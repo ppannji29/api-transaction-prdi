@@ -117,7 +117,7 @@ const HealthShop = db.define('HealthShop', {
     freezeTableName: true
 });
 
-HealthShop.hasMany(HealthShopOrder, {foreignKey: "order_id"});
+HealthShop.hasMany(HealthShopOrder, {as: "healthshoporders", foreignKey: "order_id"});
 HealthShopOrder.belongsTo(HealthShop);
 
 export default HealthShop; 

@@ -12,7 +12,7 @@ const router = express.Router();
 // router.post('/api/transaction/generated', verifyTokenAdmin, GenerateTransaction);
 router.get('/api/transaction/testapi', TestApi);
 router.post('/api/transaction/labtest', ApiLabTest);
-router.post('/api/transaction/test/list', GetTest);
+router.get('/api/transaction/test/list', GetTest);
 // ----------------------------
 // End Of Transaction Routes
 // ----------------------------

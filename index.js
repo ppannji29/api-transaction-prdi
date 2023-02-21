@@ -45,4 +45,4 @@ app.use(BodyParser.urlencoded({ extended: true }))
 
 app.use(router);
 
-app.listen(80, () => console.log("Server running at port 80"));
+app.listen(3001, () => console.log("Server running at port 3001"));
