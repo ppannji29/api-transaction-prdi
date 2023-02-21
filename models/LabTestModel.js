@@ -54,7 +54,7 @@ const LabTest = db.define('LabTest', {
         type: DataTypes.STRING(10)
     },
     referral_type_id: {
-        type: DataTypes.STRING(20)
+        type: DataTypes.STRING
     },
     doctor_name: {
         type: DataTypes.STRING(70)
