@@ -8,10 +8,16 @@ const Users = db.define('users', {
         type: DataTypes.STRING(50)
     },
     email: {
-        type: DataTypes.STRING(100)
+        type: DataTypes.STRING(100),
+        allowNull: false
     },
     password: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    role: {
+        type: DataTypes.STRING,
+        allowNull: false
     },
     refresh_token: {
         type: DataTypes.TEXT

@@ -5,26 +5,28 @@ import HealthShopOrder from "./HealthShopOrderModel.js";
 const { DataTypes } = Sequelize;
 
 const HealthShop = db.define('HealthShop', {
+    id: {
+        type: DataTypes.INTEGER(200),
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: false
+    },
     order_id: {
         type: DataTypes.STRING(100),
-        unique: true,
         allowNull: false
     },
     patient_id: {
-        type: DataTypes.STRING(14),
-        // allowNull: false
+        type: DataTypes.STRING(15),
+        allowNull: false
     },
     patient_name: {
-        type: DataTypes.STRING(150),
-        // allowNull: false
+        type: DataTypes.STRING(150)
     },
     patient_mobile: {
-        type: DataTypes.INTEGER,
-        // allowNull: false
+        type: DataTypes.STRING(15)
     },
     patient_email: {
-        type: DataTypes.STRING(100),
-        allowNull: false
+        type: DataTypes.STRING(100)
     },
     order_status: {
         type: DataTypes.STRING(15)
@@ -51,10 +53,12 @@ const HealthShop = db.define('HealthShop', {
         type: DataTypes.DATEONLY
     },
     order_time: {
-        type: DataTypes.DATETIME
+        type: DataTypes.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
     },
     update_time: {
-        type: DataTypes.DATETIME
+        type: DataTypes.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
     },
     outlet_id: {
         type: DataTypes.INTEGER
@@ -66,7 +70,8 @@ const HealthShop = db.define('HealthShop', {
         type: DataTypes.STRING(20)
     },
     offline_payment_time: {
-        type: DataTypes.DATETIME
+        type: DataTypes.DATE,
+        defaultValue: null
     },
     bill_number: {
         type: DataTypes.INTEGER
@@ -117,7 +122,7 @@ const HealthShop = db.define('HealthShop', {
     freezeTableName: true
 });
 
-HealthShop.hasMany(HealthShopOrder, {as: "healthshoporders", foreignKey: "order_id"});
+HealthShop.hasMany(HealthShopOrder, {as: "healthshoporders", foreignKey: "orderHealthShopId"});
 HealthShopOrder.belongsTo(HealthShop);
 
 export default HealthShop; 

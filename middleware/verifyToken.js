@@ -22,3 +22,15 @@ export const verifyTokenAdmin = (req, res, next) => {
         next();
     })
 }
+
+export const verfiyTokenDefault = (req, res, next) => {
+    // DEFAULT_TOKEN
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if(token == null) return res.sendStatus(401);
+    if(token == process.env.DEFAULT_TOKEN) {
+        next();
+    } else {
+        return res.sendStatus(401);
+    }
+}

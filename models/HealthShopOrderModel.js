@@ -7,6 +7,10 @@ const HealthShopOrder = db.define('HealthShopOrder', {
     item_id: {
         type: DataTypes.INTEGER(100)
     },
+    order_id: {
+        type: DataTypes.STRING(100),
+        allowNull: false
+    },
     item_name: {
         type: DataTypes.STRING(150)
     },
@@ -19,8 +23,8 @@ const HealthShopOrder = db.define('HealthShopOrder', {
     price: {
         type: DataTypes.INTEGER
     },
-    order_id: {
-        type: DataTypes.INTEGER(100),
+    orderHealthShopId: {
+        type: DataTypes.INTEGER(200),
         allowNull: false
     }
 }, {

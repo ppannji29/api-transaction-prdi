@@ -1,10 +1,13 @@
 // import Transaction from "../models/TransactionModel.js";
+import Users from "../models/UserModel.js";
 import LabTest from "../models/LabTestModel.js";
 import LabTestOrder from "../models/LabTestOrderModel.js";
 import jwt from "jsonwebtoken";
-import { Op, JSON, json } from "sequelize";
+import { Op, JSON } from "sequelize";
 import Sequelize from "../config/Database.js";
 import axios from "axios";
+import HealthShop from "../models/HealthShopModel.js";
+import HealthShopOrder from "../models/HealthShopOrderModel.js";
 // import fs from "node:fs";
 
 export const TestApi = async(req, res) => {
@@ -25,29 +28,6 @@ export const TestApi = async(req, res) => {
     } catch (error) {
         await transaction.rollback();
         console.log(error);
-    }
-}
-
-export const GetTest = async(req, res) => {
-    try {
-        const labTest = await LabTest.findAll({
-            include: [{
-                model: LabTestOrder,
-                as: 'labtestorders',
-                order: [['LabTest.updatedAt','DESC']]
-            }],
-            limit: 10,
-            offset: 1
-        });
-        if(labTest) {
-            let countData = labTest.length;
-            res.json({
-                countData,
-                labTest
-            });
-        }
-    } catch (error) {
-       console.log(error); 
     }
 }
 
@@ -219,166 +199,246 @@ export const ApiLabTest = async(req, res) => {
     }
 }
 
-// if(filterOrder[j].CEK_STATUS == 'TOPAY') {
-//     insTrx.push(
-//         {
-//             order_id: filterOrder[j].ORDER_NUMBER,
-//             outlet: filterOrder[j].APPOINTMENT_OUTLET_NAME,
-//             patient_id: parseInt(filterOrder[j].CUSTOMER_ID),
-//             status_payment: 'PENDING',
-//             status_order: filterOrder[j].CEK_STATUS,
-//             payment_by: filterOrder[j].order_by_id[0].payment_by,
-//             omzet: parseInt(filterOrder[j].order_by_id[0].omzet),
-//             omzet_ppn: parseInt(filterOrder[j].order_by_id[0].omzet_ppn),
-//             omzet_ppn_free: parseInt(filterOrder[j].order_by_id[0].omzet_ppn_free),
-//             tests: filterOrder[j].order_by_id[0].tests,
-//             home_service: filterOrder[j].order_by_id[0].home_service,
-//             referral_type_id: filterOrder[j].REFERRAL_DOCTOR_SPECIALITY,
-//             doctor_name: filterOrder[j].REFERRAL_DOCTOR_NAME,
-//             order_date: filterOrder[j].CREATED_AT
-//         },
-//     );
-// }
-// if(filterOrder[j].CEK_STATUS == 'CANCEL') {
-//     insTrx.push(
-//         {
-//             order_id: filterOrder[j].ORDER_NUMBER,
-//             outlet: filterOrder[j].APPOINTMENT_OUTLET_NAME,
-//             patient_id: parseInt(filterOrder[j].CUSTOMER_ID),
-//             status_payment: 'FAILED',
-//             status_order: filterOrder[j].CEK_STATUS,
-//             payment_by: filterOrder[j].order_by_id[0].payment_by,
-//             omzet: parseInt(filterOrder[j].order_by_id[0].omzet),
-//             omzet_ppn: parseInt(filterOrder[j].order_by_id[0].omzet_ppn),
-//             omzet_ppn_free: parseInt(filterOrder[j].order_by_id[0].omzet_ppn_free),
-//             tests: filterOrder[j].order_by_id[0].tests,
-//             home_service: filterOrder[j].order_by_id[0].home_service,
-//             referral_type_id: filterOrder[j].REFERRAL_DOCTOR_SPECIALITY,
-//             doctor_name: filterOrder[j].REFERRAL_DOCTOR_NAME,
-//             order_date: filterOrder[j].CREATED_AT
-//         },
-//     );
-// }
-// if(filterOrder[j].CEK_STATUS == 'COMPLETE') {
-//     insTrx.push(
-//         {
-//             order_id: filterOrder[j].ORDER_NUMBER,
-//             outlet: filterOrder[j].APPOINTMENT_OUTLET_NAME,
-//             patient_id: parseInt(filterOrder[j].CUSTOMER_ID),
-//             status_payment: 'PAID',
-//             status_order: filterOrder[j].CEK_STATUS,
-//             payment_by: filterOrder[j].order_by_id[0].payment_by,
-//             omzet: parseInt(filterOrder[j].order_by_id[0].omzet),
-//             omzet_ppn: parseInt(filterOrder[j].order_by_id[0].omzet_ppn),
-//             omzet_ppn_free: parseInt(filterOrder[j].order_by_id[0].omzet_ppn_free),
-//             tests: filterOrder[j].order_by_id[0].tests,
-//             home_service: filterOrder[j].order_by_id[0].home_service,
-//             referral_type_id: filterOrder[j].REFERRAL_DOCTOR_SPECIALITY,
-//             doctor_name: filterOrder[j].REFERRAL_DOCTOR_NAME,
-//             order_date: filterOrder[j].CREATED_AT
-//         },
-//     );
-// }
-// if(filterOrder[j].CEK_STATUS == 'PROCESS') {
-//     insTrx.push(
-//         {
-//             order_id: filterOrder[j].ORDER_NUMBER,
-//             outlet: filterOrder[j].APPOINTMENT_OUTLET_NAME,
-//             patient_id: parseInt(filterOrder[j].CUSTOMER_ID),
-//             status_payment: 'PAID',
-//             status_order: filterOrder[j].CEK_STATUS,
-//             payment_by: filterOrder[j].order_by_id[0].payment_by,
-//             omzet: parseInt(filterOrder[j].order_by_id[0].omzet),
-//             omzet_ppn: parseInt(filterOrder[j].order_by_id[0].omzet_ppn),
-//             omzet_ppn_free: parseInt(filterOrder[j].order_by_id[0].omzet_ppn_free),
-//             tests: filterOrder[j].order_by_id[0].tests,
-//             home_service: filterOrder[j].order_by_id[0].home_service,
-//             referral_type_id: filterOrder[j].REFERRAL_DOCTOR_SPECIALITY,
-//             doctor_name: filterOrder[j].REFERRAL_DOCTOR_NAME,
-//             order_date: filterOrder[j].CREATED_AT
-//         },
-//     );
-// }
+export const HealthShopTransaction = async(req, res) => {
+    let transaction;
+    const { dateFrom, dateTo } = req.body;
+    try {
+        transaction = await Sequelize.transaction();
+        let orders = [];
+        let orderLength;
+        await axios.get(process.env.GET_ORDER_HEALTH_SHOP, {
+            params: {
+                fromDate: dateFrom,
+                toDate: dateTo
+            }
+        }).then(function (res) {
+            orderLength = res.data.length;
+            const drug = 'Drug';
+            if(orderLength > 0) {
+                for (let i = 0; i < orderLength; i++) {
+                    if(res.data[i].orderType == drug) {
+                        orders.push(res.data[i]);
+                    }
+                }
+            } else {
+                orders = [];
+            }
+        });
+        const ordersLength = orders.length;
+        if(orderLength > 0) {
+            let insOrders = [];
+            let insOrderDetail = [];
+            let paymentMethod = '';
+            let taxAmount = '';
+            let vendorOrderReference = '';
+            let trackingUrl = '';
+            let rejectCode;
+            let rejectReason = '';
+            let tempTrxId;
+            let tempOrderId;
+            for (let i = 0; i < ordersLength; i++) {
+                if(orders[i].paymentMethod == '') {
+                    paymentMethod = '';
+                } else {
+                    paymentMethod = orders[i].paymentMethod;
+                }
+                if(orders[i].channel == '') {
+                    paymentMethod = '';
+                } else {
+                    paymentMethod = orders[i].channel;
+                }
+                if(orders[i].taxAmount == '') {
+                    taxAmount = '';
+                } else {
+                    taxAmount = orders[i].taxAmount;
+                }
+                if(orders[i].vendorOrderReference == '') {
+                    vendorOrderReference = '';
+                } else {
+                    vendorOrderReference = orders[i].vendorOrderReference;
+                }
+                if(orders[i].trackingUrl == '') {
+                    trackingUrl = '';
+                } else {
+                    trackingUrl = orders[i].trackingUrl;
+                }
+                if(orders[i].rejectCode == '') {
+                    rejectCode = '';
+                } else {
+                    rejectCode = orders[i].rejectCode;
+                }
+                if(orders[i].rejectReason == '') {
+                    rejectReason = '';
+                } else {
+                    rejectReason = orders[i].rejectReason;
+                }
+                insOrders[i] = await HealthShop.create({
+                    order_id: orders[i].orderId,
+                    patient_id: orders[i].patientId,
+                    patient_name: orders[i].patientName,
+                    patient_mobile: orders[i].patientMobile,
+                    patient_email: orders[i].patientEmail,
+                    order_status: orders[i].orderStatus,
+                    order_type: orders[i].orderType,
+                    payment_method: paymentMethod,
+                    vendor_id: orders[i].vendorId,
+                    order_amount: orders[i].orderAmount,
+                    tax_amount: taxAmount,
+                    order_date: orders[i].orderDate,
+                    order_time: orders[i].orderTime,
+                    update_time: orders[i].updateTime,
+                    vendor_order_reference: vendorOrderReference,
+                    total_price: orders[i].totalPrice,
+                    latitude: orders[i].geolocation['latitude'],
+                    longitude: orders[i].geolocation['longitude'],
+                    address_note: orders[i].addressNote,
+                    store_id: orders[i].storeId,
+                    shipping_fee: orders[i].shippingFee,
+                    delivery_status: orders[i].deliveryStatus,
+                    tracking_url: trackingUrl,
+                    reject_code: rejectCode,
+                    reject_reason: rejectReason
+                }, { transaction });
+                tempTrxId = insOrders[i].id;
+                tempOrderId = insOrders[i].order_id;
+                for (let j = 0; j < orders[i].drugOrderItems.length; j++) {
+                    await HealthShopOrder.create({  
+                        item_id: orders[i].drugOrderItems[j].id,
+                        order_id: tempOrderId,
+                        item_name: orders[i].drugOrderItems[j].name,
+                        image: orders[i].drugOrderItems[j].image,
+                        qty: orders[i].drugOrderItems[j].qty,
+                        price: orders[i].drugOrderItems[j].price,
+                        orderHealthShopId: tempTrxId
+                    }, { transaction }).then(function (resData) { 
+                        insOrderDetail.push(resData);
+                    }); 
+                }
+                tempTrxId = '';
+                tempOrderId = '';
+            }
+            let insertHealthShopCount = insOrders.length;
+            let insertHealthShopDetailCount = insOrderDetail.length;
+            await transaction.commit();
+            res.json({
+                orderFetchCount: orderLength, 
+                insertHealthShopCount,
+                insertHealthShopDetailCount,
+                dataHealthShop: insOrders,
+                dataHealthShopDetail: insOrderDetail
+            });
+        } else {
+            res.status(404).send({
+                message: "Health Shop Order Not Found in date : "+dateFrom+" - "+dateTo
+            });
+        }
+    } catch (error) {
+        await transaction.rollback();
+        console.log(error);
+    }
+}
 
-// function getAdminByIdFromJwt(token) {
-//     let adminId;
-//     let usernameAdmin;
-//     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-//         if(err) return res.sendStatus(403)
-//         adminId = decoded.adminId;
-//         usernameAdmin = decoded.username;
-//     })
-//     const checkAdmin = Admin.findOne({ 
-//         where: {
-//             [Op.and]: [
-//                 { id: adminId },
-//                 { username: usernameAdmin }
-//             ]
-//         },
-//     });
-//     console.log("ID ADMIN : ", adminId);
-//     if(checkAdmin) {
-//         return adminId;
-//     } else {
-//         res.status(403).send({
-//             message: "You are not allowed to get this action"
-//         }); 
-//     }
-// }
+export const GetTest = async(req, res) => {
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1]
+    if (token == null) return res.sendStatus(401)
+    let getUser = getAdminIdByJWT(token);
+    let userId;
+    await getUser.then(function(result) {
+        userId = result;
+    });
+    if(userId == false) {
+        console.log("FALSE : ", userId);
+        res.status(403).send({message: "You are not allowed to access this API"}); 
+    } else {
+        const { page, totalRow } = req.query;
+        let currentPage = parseInt(page);
+        let totalData = parseInt(totalRow);
+        let curPage;
+        if(currentPage > 1) {
+            curPage = currentPage * totalData - totalData;
+        } else {
+            curPage = 0;
+        }
+        const labTest = await LabTest.findAll({
+            include: [{
+                model: LabTestOrder,
+                as: 'labtestorders',
+                order: [['LabTest.updatedAt','DESC']]
+            }],
+            limit: totalData,
+            offset: curPage
+        });
+        try {
+            let countData = labTest.length;
+            res.json({
+                totalData: countData,
+                page: currentPage,
+                data: labTest
+            });
+        } catch (error) {
+           console.log(error); 
+        }
+    }
+}
 
-// export const ListOfTransaction = async(req, res) => {
-//     try {
-//         const transaction = await Transaction.findAll({
-//             include: [
-//             {
-//                 model: Merchant,
-//                 as: 'merchant',
-//                 order: [['Transaction.updateAt','DESC']]
-//             },
-//             {
-//                 model: Admin,
-//                 as: 'admin',
-//                 order: [['Transaction.updateAt','DESC']]
-//             }]
-//         });
-//         if(transaction) {
-//             res.json({ data: transaction });
-//         } else {
-//             res.status(404).send({
-//                 message: "Transaction Not Found"
-//             });
-//         }
-//     } catch (error) {
-//         console.log(error);
-//     }
-// }
+export const GetHealthShopTransaction = async (req, res) => { 
+    const { page, totalRow } = req.query;
+    let currentPage = parseInt(page);
+    let totalData = parseInt(totalRow);
+    let curPage;
+    if(currentPage > 1) {
+        curPage = currentPage * totalData - totalData;
+    } else {
+        curPage = 0;
+    }
+    const healthShopDetail = await HealthShop.findAll({
+        include: [{
+            model: HealthShopOrder,
+            as: 'healthshoporders',
+            order: [['HealthShopOrder.id','ASC']]
+        }],
+        limit: totalData,
+        offset: curPage
+    });
+    try {
+        let countData = healthShopDetail.length;
+        res.json({
+            page: currentPage,
+            totalData: countData,
+            healthShopDetail
+        });
+    } catch (error) {
+        console.log(error);
+    }
+}
 
-// export const GenerateTransaction = async(req, res) => {
-//     try {
-//         const authHeader = req.headers['authorization']
-//         const token = authHeader && authHeader.split(' ')[1]
-//         if (token == null) return res.sendStatus(401)
-//         let getAdminID = getAdminByIdFromJwt(token);
-//         // console.log("ADMIN ID UPD >> : ", getAdminID);
-//         if(getAdminID) {
-//             const { transaction } = req.body;
-//             const trxLength = transaction.length;
-//             let insTrx = [];
-//             for (let i = 0; i < trxLength; i++) {
-//                 insTrx[i] = await Transaction.create({
-//                     amount: transaction[i].amount,
-//                     content: transaction[i].content,
-//                     paymentType: transaction[i].paymentType,
-//                     merchantId: transaction[i].merchantId,
-//                     adminId: getAdminID
-//                 });
-//             }
-//             res.status(200).send({
-//                 message: "Success To Generate Transaction",
-//                 data: insTrx
-//             });
-//         }
-//     } catch (error) {
-//         console.log(error)
-//     }
-// }
+const getAdminIdByJWT = async (token) => {
+    let userId;
+    let name;
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+        if(err) return res.sendStatus(403)
+        userId = decoded.userId;
+        name = decoded.name;
+    });
+    let role;
+    let response;
+    await Users.findOne({ 
+        where: {
+            id: userId 
+        },
+        where: {
+            [Op.and]: [
+                { id: userId }
+            ]
+        },
+    }).then(function (result) {
+        role = result.role;
+    })
+    if(role == 'admin') {
+        response = userId;
+        return response;
+    } else {
+        return false;
+    }
+}
