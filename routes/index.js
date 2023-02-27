@@ -13,7 +13,7 @@ const router = express.Router();
 // router.post('/api/transaction/generated', verifyTokenAdmin, GenerateTransaction);
 router.get('/api/transaction/testapi', TestApi);
 router.post('/api/transaction/labtest', ApiLabTest);
-router.get('/api/transaction/listtest', verifyToken, GetTest);
+router.get('/api/transaction/list/test', verifyToken, GetTest);
 router.post('/api/transaction/healthshop', HealthShopTransaction);
 router.get('/api/transaction/fetch/healthshop', GetHealthShopTransaction);
 // ----------------------------
