@@ -5,9 +5,9 @@ import db from "./config/Database.js";
 // --------------------------------------------
 // Open Comment If You Need To Migrate Table DB
 // --------------------------------------------
-// import Users from "./models/UserModel.js";
-// import HealthShop from "./models/HealthShopModel.js";
-// import HealthShopOrder from "./models/HealthShopOrderModel.js";
+import Users from "./models/UserModel.js";
+import HealthShop from "./models/HealthShopModel.js";
+import HealthShopOrder from "./models/HealthShopOrderModel.js";
 import LabTest from "./models/LabTestModel.js";
 import LabTestOrder from "./models/LabTestOrderModel.js";
 // ----------------------------------------------------------
@@ -23,11 +23,11 @@ try {
     // --------------------------------------
     // Start Of : Migrate Table DB with Sync
     // ---------------------------------------
-    // await Users.sync();
+    await Users.sync();
     await LabTest.sync();
     await LabTestOrder.sync();
-    // await HealthShop.sync();
-    // await HealthShopOrder.sync();
+    await HealthShop.sync();
+    await HealthShopOrder.sync();
     // --------------------------------------
     // End Of : Migrate Table DB with Sync
     // ---------------------------------------
