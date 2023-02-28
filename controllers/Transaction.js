@@ -1,4 +1,3 @@
-// import Transaction from "../models/TransactionModel.js";
 import Users from "../models/UserModel.js";
 import LabTest from "../models/LabTestModel.js";
 import LabTestOrder from "../models/LabTestOrderModel.js";

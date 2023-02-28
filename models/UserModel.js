@@ -3,7 +3,7 @@ import db from "../config/Database.js";
 
 const { DataTypes } = Sequelize;
 
-const Users = db.define('users', {
+const Users = db.define('Users', {
     name: {
         type: DataTypes.STRING(50)
     },

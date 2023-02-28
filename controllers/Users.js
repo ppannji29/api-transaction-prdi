@@ -1,6 +1,7 @@
 import Users from "../models/UserModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { Op, JSON } from "sequelize";
 
 export const getUsers = async(req, res) => {
     try {
@@ -91,29 +92,38 @@ export const RegisterByAdmin = async(req, res) => {
 }
 
 export const Register = async(req, res) => {
-    const { name, email, password, confPassword } = req.body;
-    if(password !== confPassword) {
-        console.log("password : ", password);
-        console.log("confpassword : ", confPassword);
-        return res.status(400).json({msg: "Password doesn't match"})
-    }
-    const salt = await bcrypt.genSalt();
-    const hashPassword = await bcrypt.hash(password, salt);
-    console.log("same : ", hashPassword);
-    try {
-        const userCreate = await Users.create({
-            name: name,
-            email: email,
-            password: hashPassword
-        });
-        res.status(200).send({
-            status: 200,
-            message: "Registration Successfully",
-            data: userCreate
-        });
-    } catch (error) {
-        console.log(error);
-    }
+    res.status(403).send({ message: "This Action Already Use You Can't Use This Action More Than One" })
+    // const { name, email, password, confPassword, role } = req.body;
+    // if(password !== confPassword) {
+    //     console.log("password : ", password);
+    //     console.log("confpassword : ", confPassword);
+    //     return res.status(400).json({msg: "Password doesn't match"})
+    // }
+    // let checkEmail = await Users.findOne({
+    //     where: {
+    //         email: email
+    //     }
+    // })
+    // if(checkEmail) return res.status(400).json({msg: "Email Already Used"}); 
+    // const salt = await bcrypt.genSalt();
+    // const hashPassword = await bcrypt.hash(password, salt);
+    // console.log("same : ", hashPassword);
+    // try {
+    //     let roleLowerCase = role.toLowerCase();
+    //     const userCreate = await Users.create({
+    //         name: name,
+    //         email: email,
+    //         password: hashPassword,
+    //         role: roleLowerCase
+    //     });
+    //     res.status(200).send({
+    //         status: 200,
+    //         message: "Registration Successfully",
+    //         data: userCreate
+    //     });
+    // } catch (error) {
+    //     console.log(error);
+    // }
 }
 
 export const Login = async(req, res) => {
